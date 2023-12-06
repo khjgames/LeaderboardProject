@@ -1,36 +1,74 @@
-<!DOCTYPE html> <!-- READ GAMES PAGE -->
+<!DOCTYPE html> <!-- ADD GAME PAGE -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> READ GAMES </title>
-    <style>
-        table tr td {
-            text-align: center;
+    <style>     
+        td {    
+            height:26px;
+            width: 120px;
         }
-        button {
-            background: #1B7D2C;
+        th {
+            background: #C4445B;
             color: white;
         }
+        button {
+            background: #C4445B;
+            color: white;
+        }
+        /*
+            for game rows alternate background colors
+            ;
+            background-color: #72A87C;
+        */
     </style>
 </head>
-<body>
-    <button onclick="goFetch()">Quote Me</button>
-    <div id="quote"></div>
+<body onload="onloadJS()">    
+    <div id="dynamic_list"></div>
     <script>
-        function goFetch(){
-            var quoteTag = document.getElementById('quote');
+        function onloadJS(){
+            var odd = false; //for alternating table row colors
+            var quoteTag = document.getElementById('dynamic_list');
             quoteTag.innerHTML = "";
-            var tableTag = "";
+            function GameEntryHTML(Game){
+                odd = !odd; var bg_color = "#F5E9E9"; if (odd) bg_color = "#EACFD0";
+                return `
+                    <tr style = "background-color: ` + bg_color + `">
+                        <td hidden>` + Game.id + `</td>
+                        <td> <a href="#">` + Game.GameName + `</a> </td>
+                        <td>` + Game.Platform + `</td>
+                    </tr>`;
+            }
+            var tableStart = `
+                <table>
+                    <tr>
+                        <td colspan="2" style="height: 30px; text-align: center;"> Games </td>
+                    </tr>
+                    <tr>
+                        <th>Game Name</th>
+                        <th>Platform</th>
+                    </tr>
+            `;
+            var tableGameEntries = "";
+            var tableEnd = `
+                        <td colspan="2" style="height: 36px; text-align: center;"> <button onclick="goFetch()"> New Game </button> </td>
+                    </tr>
+                </table>
+            `;
             fetch("https://lime-faithful-hippo.cyclic.app/api/games")
             .then(function(response) {
                 return response.json();
             })
             .then(function(data) {  
                 console.log(data);
-                data.forEach((element,index) => {
-                    
+                tableGameEntries = ``;
+                data.forEach((e) => {
+                    tableGameEntries += GameEntryHTML(e);
                 });
+            })
+            .then(function(data){
+                quoteTag.innerHTML = tableStart + tableGameEntries + tableEnd;
             })
             .catch(function(err){
                 console.log("|ERROR:| "+err);

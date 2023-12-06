@@ -1,21 +1,42 @@
-<!DOCTYPE html> <!-- ADD LEADERBOARD PAGE -->
+<!DOCTYPE html> <!-- ADD GAME PAGE -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> ADD LEADERBOARD </title>
-    <style>
-        table tr td {
-            text-align: center;
+    <style>     
+        td {
+            text-align: center; 
+            height:26px;
         }
         button {
-            background: #1B7D2C;
+            background: #C4445B;
             color: white;
         }
     </style>
 </head>
 <body>
-    <button onclick="goFetch()">Quote Me</button>
+    <table>
+        <tr>
+            <td colspan="2" style="height: 30px;"> Add Score to [Game Name] </td>
+        </tr>
+        <tr>
+            <td>Player: </td>
+            <td> <input type="  text" name="n1" value="" id="n1"> </td>
+        </tr>
+        <tr>
+            <td>Score: </td>
+            <td> <input type="text" name="n2" value="" id="n2"> </td>
+        </tr>
+        <tr>
+            <td>Time: </td>
+            <td> <input type="text" name="n3" value="" id="n3"> </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 36px;"> <button onclick="goFetch()"> Submit </button> </td>
+        </tr>
+    </table>
+    
     <div id="quote"></div>
     <script>
         function goFetch(){
