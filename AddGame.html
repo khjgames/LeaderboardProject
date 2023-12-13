@@ -1,0 +1,66 @@
+<!DOCTYPE html> <!-- ADD GAME PAGE -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> ADD GAME </title>
+    <style>
+        button {
+            background: #C4445B;
+            color: white;
+        }
+        form {
+            padding-left: 30px;
+            width: 200px;
+            display: grid;
+            grid-template-columns: 66   px auto;
+            grid-row-gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <a href = "index.html"> Link to Games page </a> <br>
+    <a href = "AddGame.html"> Link to add game </a>
+ 
+        <form> <!-- No need for action="#" here since we run onclick javascript -->
+            <p style = "grid-column: span 2; text-align: center; height:7px"> Add Game </p>
+            <label for="GameName">Name:</label>
+            <input type="text" name="GameName" id="GameName">
+            <label for="Platform">Platform:</label> 
+            <input type="text" name="Platform" id="Platform">
+        </form>
+        <div style = "padding-left: 122px; padding-top: 17px">
+            <button onclick="goFetch()"> Submit </button>
+        </div>
+
+    <script>
+        function goFetch(){
+
+            var GameName = document.getElementById("GameName");
+            var Platform = document.getElementById("Platform");
+            
+            var AddGamePostData = {
+                "name" : GameName.value.trim(),
+                "platform" :  Platform.value.trim()
+            };
+
+            fetch("https://lime-faithful-hippo.cyclic.app/api/games", {
+                method : "POST",
+                mode : "cors",
+                body: JSON.stringify(AddGamePostData),
+                headers: {"Content-type": "application/json; charset=UTF-8"}
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.message == "OK") {
+                    window.location.href = "index.html";
+                }
+            })
+            .catch(err => {
+                console.log("|ERROR:| "+err);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> READ GAMES </title>
+    <title> READ LEADERBOARD </title>
     <style>     
         td {    
             height:26px;
@@ -24,53 +24,70 @@
         */
     </style>
 </head>
-<body onload="onloadJS()">    
+<body onload="onloadJS()">
+    <a href = "index.html"> Link to Games page </a> <br>
+    <a href = "AddGame.html"> Link to add game </a>
     <div id="dynamic_list"></div>
     <script>
         function onloadJS(){
+            var query = window.location.search;
+            var queryList = new URLSearchParams(query);
+            var id = queryList.get('i'); 
             var odd = false; //for alternating table row colors
             var quoteTag = document.getElementById('dynamic_list');
             quoteTag.innerHTML = "";
-            function GameEntryHTML(Game){
+
+            var tableStart = ``;
+            function UpdateTableHeader(Game){
+                tableStart = `
+                <table>
+                    <tr>
+                        <td colspan="3" style="height: 30px; text-align: center;">` + Game.GameName + ` Leaderboard </td>
+                    </tr>
+                    <tr>
+                        <th> Player </th>
+                        <th> Score </th>
+                        <th> Time </th>
+                    </tr>
+                `;
+            } 
+           
+            var tableLeaderboardEntries = "";
+            function LeaderboardEntryHTML(Entry){
                 odd = !odd; var bg_color = "#F5E9E9"; if (odd) bg_color = "#EACFD0";
                 return `
                     <tr style = "background-color: ` + bg_color + `">
-                        <td hidden>` + Game.id + `</td>
-                        <td> <a href="#">` + Game.GameName + `</a> </td>
-                        <td>` + Game.Platform + `</td>
+                        <td hidden>` + Entry.id + `</td>
+                        <td>` + Entry.Player + `</td>
+                        <td>` + Entry.Score + `</td>
+                        <td>` + Entry.Time + `</td>
                     </tr>`;
             }
-            var tableStart = `
-                <table>
-                    <tr>
-                        <td colspan="2" style="height: 30px; text-align: center;"> Games </td>
-                    </tr>
-                    <tr>
-                        <th>Game Name</th>
-                        <th>Platform</th>
-                    </tr>
-            `;
-            var tableGameEntries = "";
-            var tableEnd = `
-                        <td colspan="2" style="height: 36px; text-align: center;"> <button onclick="goFetch()"> New Game </button> </td>
+
+            var tableEnd = ``;
+            function UpdateTableFooter(Game){
+                tableEnd = `
+                        <td colspan="2" style="height: 36px; text-align: center;"> <a href="AddLeaderboard.html?i=`+Game.id+`&n=`+Game.GameName+`"> <button> New Entry </button> </a> </td>
                     </tr>
                 </table>
-            `;
-            fetch("https://lime-faithful-hippo.cyclic.app/api/games")
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(data) {  
+                `;
+            }
+
+            fetch("https://lime-faithful-hippo.cyclic.app/api/leaderBoard/"+id)
+            .then(response => response.json())
+            .then(data => {
                 console.log(data);
-                tableGameEntries = ``;
-                data.forEach((e) => {
-                    tableGameEntries += GameEntryHTML(e);
+                UpdateTableHeader(data);
+                UpdateTableFooter(data);
+                tableLeaderboardEntries = ``;
+                data.Leaderboard.forEach((e) => {
+                    tableLeaderboardEntries += LeaderboardEntryHTML(e);
                 });
             })
-            .then(function(data){
-                quoteTag.innerHTML = tableStart + tableGameEntries + tableEnd;
+            .then(data => {
+                quoteTag.innerHTML = tableStart + tableLeaderboardEntries + tableEnd;
             })
-            .catch(function(err){
+            .catch(err => {
                 console.log("|ERROR:| "+err);
             });
         }

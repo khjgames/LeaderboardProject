@@ -3,53 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> ADD GAME </title>
+    <title> READ GAMES </title>
     <style>     
-        td {
-            text-align: center; 
+        td {    
             height:26px;
+            width: 120px;
+        }
+        th {
+            background: #C4445B;
+            color: white;
         }
         button {
             background: #C4445B;
             color: white;
         }
+        /*
+            for game rows alternate background colors
+            ;
+            background-color: #72A87C;
+        */
     </style>
 </head>
-<body>
-    <table>
-        <tr>
-            <td colspan="2" style="height: 30px;"> Add Game </td>
-        </tr>
-        <tr>
-            <td>Name: </td>
-            <td> <input type="  text" name="n1" value="" id="n1"> </td>
-        </tr>
-        <tr>
-            <td>Platform: </td>
-            <td> <input type="text" name="n2" value="" id="n2"> </td>
-        </tr>
-        <tr>
-            <td colspan="2" style="height: 36px;"> <button onclick="goFetch()"> Submit </button> </td>
-        </tr>
-    </table>
-    
-    <div id="quote"></div>
+<body onload="onloadJS()"> 
+    <a href = "index.html"> Link to Games page </a> <br>
+    <a href = "AddGame.html"> Link to add game </a>
+    <div id="dynamic_list"></div>
     <script>
-        function goFetch(){
-            var quoteTag = document.getElementById('quote');
+        function onloadJS(){
+            var odd = false; //for alternating table row colors
+            var quoteTag = document.getElementById('dynamic_list');
             quoteTag.innerHTML = "";
-            var tableTag = "";
+            function GameEntryHTML(Game){
+                odd = !odd; var bg_color = "#F5E9E9"; if (odd) bg_color = "#EACFD0";
+                return `
+                    <tr style = "background-color: ` + bg_color + `">
+                        <td hidden>` + Game.id + `</td>
+                        <td> <a href = "ReadLeaderboard.html?i=`+Game.id+`">` + Game.GameName + `</a> </td>
+                        <td>` + Game.Platform + `</td>
+                    </tr>`;
+            }
+            var tableStart = `
+                <table>
+                    <tr>
+                        <td colspan="2" style="height: 30px; text-align: center;"> Games </td>
+                    </tr>
+                    <tr>
+                        <th> Game Name </th>
+                        <th>Platform</th>
+                    </tr>
+            `;
+            var tableGameEntries = "";
+            var tableEnd = `
+                        <td colspan="2" style="height: 36px; text-align: center;"> <a href="AddGame.html"> <button> New Game </button> </a> </td>
+                    </tr>
+                </table>
+            `;
             fetch("https://lime-faithful-hippo.cyclic.app/api/games")
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(data) {  
+            .then(response => response.json())
+            .then(data => { 
                 console.log(data);
-                data.forEach((element,index) => {
-                    
+                tableGameEntries = ``;
+                data.forEach((e) => {
+                    tableGameEntries += GameEntryHTML(e);
                 });
             })
-            .catch(function(err){
+            .then(data => {
+                quoteTag.innerHTML = tableStart + tableGameEntries + tableEnd;
+            })
+            .catch(err => {
                 console.log("|ERROR:| "+err);
             });
         }
